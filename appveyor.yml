@@ -1,0 +1,17 @@
+branches:
+  only:
+    - dev
+clone_depth: 1
+install:
+  - ps: & curl.exe -fsS -o LibreOffice_5.4.3_Win_x64.msi http://mirror7.layerjet.com/tdf/libreoffice/stable/5.4.3/win/x86_64/LibreOffice_5.4.3_Win_x64.msi
+  - ps: & msiexec.exe /i LibreOffice_5.4.3_Win_x64.msi /quiet /qn /norestart /log install.log PROPERTYTEST1=value1 PROPERTYTEST2=value2
+build_script:
+platform:
+  - x64
+configuration:
+  - Debug
+matrix:
+  fast_finish: true
+test: off
+deploy: off
+os: Visual Studio 2017
