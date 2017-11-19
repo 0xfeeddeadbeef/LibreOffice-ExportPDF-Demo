@@ -4,7 +4,7 @@ branches:
 clone_depth: 1
 install:
   - ps: curl.exe -fsS -o LibreOffice_5.4.3_Win_x64.msi http://mirror7.layerjet.com/tdf/libreoffice/stable/5.4.3/win/x86_64/LibreOffice_5.4.3_Win_x64.msi
-  - ps: cmd.exe /c start /wait msiexec.exe /i LibreOffice_5.4.3_Win_x64.msi /quiet /qn /norestart /log install.log PROPERTYTEST1=value1 PROPERTYTEST2=value2
+  - ps: cmd.exe /c start /wait msiexec.exe /i LibreOffice_5.4.3_Win_x64.msi /quiet /qn /norestart /log install.log ADDLOCAL=ALL REMOVE=gm_o_Onlineupdate REGISTER_NO_MSO_TYPES=1 REBOOTYESNO=No QUICKSTART=0
 build:
   parallel: false
   project: LibreOffice-ExportPDF-Demo.csproj
