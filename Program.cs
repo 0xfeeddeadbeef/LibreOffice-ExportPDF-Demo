@@ -31,29 +31,24 @@ internal static class Program
 
     private static void Main(string[] args)
     {
+        if (args == null || args.Length != 2 || !File.Exists(args[0]))
+        {
+            Console.Error.WriteLine("Usage:\nDemo.exe <input.docx> <output.pdf>");
+            return;
+        }
+
+        SetupEnvironment();
+
         ConvertToPDF(
             serverHost: "localhost",
             serverPort: 2002,
-            inputFile:  new Uri(@"C:\Test\Word.docx"),
-            outputFile: new Uri(@"C:\Test\Adobe.pdf")
+            inputFile:  new Uri(args[0]),
+            outputFile: new Uri(args[1])
         );
     }
 
     private static void ConvertToPDF(string serverHost, int serverPort, Uri inputFile, Uri outputFile)
     {
-        string libreOfficePath = GetLibreOfficePath();
-
-        if (string.IsNullOrEmpty(libreOfficePath) || !Directory.Exists(libreOfficePath))
-        {
-            throw new InvalidOperationException("LibreOffice is not installed.");
-        }
-
-        // HACK: This is much more convenient than cluttering system-wide environment.
-        //       These variables must be set to correct paths, or else, this method will fail (!!!)
-        Environment.SetEnvironmentVariable("UNO_PATH", libreOfficePath, EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) + ";" + libreOfficePath, EnvironmentVariableTarget.Process);
-
-
         // FIX: Workaround for a known bug: XUnoUrlResolver forgets to call WSAStartup. We can use dummy Socket for that:
         using (var dummySocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP))
         {
@@ -115,5 +110,20 @@ internal static class Program
         {
             return key.GetValue(null) as string;
         }
+    }
+
+    private static void SetupEnvironment()
+    {
+        string libreOfficePath = GetLibreOfficePath();
+
+        if (string.IsNullOrEmpty(libreOfficePath) || !Directory.Exists(libreOfficePath))
+        {
+            throw new InvalidOperationException("LibreOffice is not installed.");
+        }
+
+        // HACK: This is much more convenient than cluttering system-wide environment.
+        //       These variables must be set to correct paths, or else, this method will fail (!!!)
+        Environment.SetEnvironmentVariable("UNO_PATH", libreOfficePath, EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) + ";" + libreOfficePath, EnvironmentVariableTarget.Process);
     }
 }
